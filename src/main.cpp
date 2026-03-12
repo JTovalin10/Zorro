@@ -1,12 +1,11 @@
 #include <iostream>
 #include <string>
+#include "shell_built_in.h"
 
 
 bool is_input_shell_type(const std::string& input) noexcept {
-  if (input == "echo" || input == "exit" || input == "type") {
-    return true;
-  }
-  return false;
+  static shell_hash_set set();
+  return set.contains(input);
 }
 
 /**
