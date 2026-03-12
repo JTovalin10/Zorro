@@ -1,7 +1,7 @@
 #ifndef SHELL_BUILT_IN_H_
 #define SHELL_BUILT_IN_H_
 
-#define <unordered_set>
+#include <unordered_set>
 
 class shell_hash_set {
   public:
