@@ -3,7 +3,7 @@
 
 void complete_operation(const std::string& user_input) noexcept {
   // check if is echo
-  if (user_input.size() >= 4 && user_input.subtr(0, 4) == "echo") {
+  if (user_input.size() >= 4 && user_input.substr(0, 4) == "echo") {
     std::cout << user_input.substr(5);
   } else {
     std::cout << user_input << ": command not found";
