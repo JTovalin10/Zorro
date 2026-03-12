@@ -3,7 +3,7 @@
 
 
 bool is_input_shell_type(const std::string& input) noexcept {
-  if (input == "echo" || input == "exit") {
+  if (input == "echo" || input == "exit" || input == "type") {
     return true;
   }
   return false;
