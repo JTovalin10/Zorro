@@ -3,7 +3,7 @@
 
 void complete_operation(const std::string& user_input) noexcept {
   // check if is echo
-  std::cout << "size of string: " + user_input.size(); << std::endl;
+  std::cout << "size of string: " + user_input.size() << std::endl;
   if (user_input.size() >= 4) {
     std::cout << "Inside echo";
   } else {
