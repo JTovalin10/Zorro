@@ -16,7 +16,7 @@ int main() {
     } else {
       std::cout << user_input + ": command not found";
     }
-    std::endl;
+    std::cout << std::endl;
     user_input.clear();
   }
 }
