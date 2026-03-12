@@ -3,11 +3,11 @@
 
 void complete_operation(const std::string& user_input) noexcept {
   // check if is echo
-  std::cerr << "size of string: " + user_input.size() << std::endl;
+  std::cerr << "size of string: " << user_input.size() << std::endl;
   if (user_input.size() >= 4) {
     std::cout << "Inside echo";
   } else {
-    std::cout << user_input + ": command not found";
+    std::cout << user_input << ": command not found";
   }
 }
 
