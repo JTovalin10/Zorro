@@ -4,7 +4,7 @@
 void complete_operation(const std::string& user_input) noexcept {
   // check if is echo
   if (user_input.size() >= 4) {
-    std::cout << user_input.substr(0, 4);
+    std::cout << user_input.substr(4);
   } else {
     std::cout << user_input << ": command not found";
   }
