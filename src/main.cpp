@@ -1,11 +1,35 @@
 #include <iostream>
 #include <string>
+#include <filesystem>
+#include <cstdlib>
 #include "shell_built_in.h"
 
 
 bool is_input_shell_type(const std::string& input) noexcept {
   static shell_hash_set set{};
   return set.contains(input);
+}
+
+const std::string find_in_file_system(const std::string& type) noexcept {
+  const char* path = std::getenv("PATH");
+  // base case
+  return "";
+}
+
+void print_type(const std::string& input) noexcept {
+  const std::string type = user_input.substr(5);
+  const bool is_type = is_input_shell_type(type);
+  if (is_type) {
+    std::cout << type << " is a shell builtin";
+    return;
+  }
+  // check if it is within our file system
+  const std::string& path = find_in_file_system(type);
+  if (path.size() > 0) {
+    std::cout << type << " is " << path;
+  }
+  // base case
+  std::cout << type << ": not found";
 }
 
 /**
@@ -20,12 +44,7 @@ void complete_operation(const std::string& user_input) noexcept {
   if (geq_4 && user_input.substr(0, 4) == "echo") {
     std::cout << user_input.substr(5);
   } else if (geq_4 && user_input.substr(0, 4) == "type") {
-    const bool is_type = is_input_shell_type(user_input.substr(5));
-    if (is_type) {
-      std::cout << user_input.substr(5) << " is a shell builtin";
-    } else {
-      std::cout << user_input.substr(5) << ": not found";
-    }
+    print_type(user_input);
   } else {
     std::cout << user_input << ": command not found";
   }
