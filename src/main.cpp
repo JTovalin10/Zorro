@@ -9,7 +9,9 @@ int main() {
   while (true) {
     std::cout << "$ ";
     std::cin >> user_input;
-    if (user_input.size() >= 0) {
+    if (user_input == "exit") {
+      break;
+    } else {
       std::cout << user_input + ": command not found" << std::endl;
     }
     user_input.clear();
