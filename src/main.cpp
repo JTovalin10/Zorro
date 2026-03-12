@@ -9,7 +9,7 @@ int main() {
   std::cout << "$ ";
   std::string user_input;
   std::cin >> user_input;
-  if (user_input) {
+  if (user_input.size() >= 0) {
     std::cout << user_input + ": Command not found";
   }
 }
