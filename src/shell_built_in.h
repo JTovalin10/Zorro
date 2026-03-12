@@ -11,7 +11,7 @@ class shell_hash_set {
    set.insert("exit");
   }
 
-  ~shell_hash_set = default;
+  ~shell_hash_set() = default;
   shell_hash_set(const shell_hash_set& other) = default;
   shell_hash_set(shell_hash_set&& other) = default;
   shell_hash_set& operator=(const shell_hash_set& other) = default;
