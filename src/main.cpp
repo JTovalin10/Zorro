@@ -4,7 +4,7 @@
 
 
 bool is_input_shell_type(const std::string& input) noexcept {
-  static shell_hash_set set();
+  static shell_hash_set set{};
   return set.contains(input);
 }
 
