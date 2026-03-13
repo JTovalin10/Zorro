@@ -15,6 +15,15 @@ namespace fs = std::filesystem;
 
 namespace Slime {
 
+void change_directory(const std::string& desired_path) {
+  fs::path current_path = fs::current_path();
+  try {
+    fs::current_path(desired_path);
+  } catch (const fs::filesystem_error& e) {
+    std::cout << "cd: " << desired_path << ": No such file or directory";
+  }
+}
+
 void print_working_directory() {
   fs::path currentPath = fs::current_path();
   std::cout << currentPath.string() << "\n";
