@@ -1,29 +1,18 @@
-#include "filesys.h"
-#include "shell_built_in.h"
 #include <cstdlib>
 #include <iostream>
 #include <string>
 
-bool is_input_shell_type(const std::string &input) noexcept {
-  static Slime::shell_hash_set set{};
-  return set.contains(input);
-}
+#include "filesys.h"
 
-const std::string find_in_file_system(std::string &command) noexcept {
-  char *path = std::getenv("PATH");
-  // base case
-  return Slime::find_in_path(command, path);
-}
-
-void print_type(const std::string &input) noexcept {
+void print_type(const std::string& input) noexcept {
   std::string type = input.substr(5);
-  const bool is_type = is_input_shell_type(type);
+  const bool is_type = Slime::is_input_shell_type(type);
   if (is_type) {
     std::cout << type << " is a shell builtin";
     return;
   }
   // check if it is within our file system
-  const std::string &path = find_in_file_system(type);
+  const std::string& path = Slime::find_in_file_system(type);
 
   if (path.size() > 0) {
     std::cout << type << " is " << path;
@@ -39,7 +28,7 @@ void print_type(const std::string &input) noexcept {
  * ARGS:
  * user_input - string that contains the user input
  */
-void complete_operation(const std::string &user_input) noexcept {
+void complete_operation(const std::string& user_input) noexcept {
   std::vector<std::string> inputs = user_input | std::views::split(' ') |
                                     std::ranges::to<std::vector<std::string>>();
   std::string command = inputs[0];
@@ -49,6 +38,8 @@ void complete_operation(const std::string &user_input) noexcept {
   } else if (command == "type") {
     print_type(user_input);
     std::cout << "\n";
+  } else if (command == "pwd") {
+    Slime::print_working_directory();
   } else if (Slime::is_executable(command, std::getenv("PATH"))) {
     Slime::execute_command(command, inputs);
   } else {

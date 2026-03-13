@@ -9,11 +9,18 @@
 #include <string_view>
 #include <vector>
 
-namespace f_sys = std::filesystem;
+#include "shell_built_in.h"
+
+namespace fs = std::filesystem;
 
 namespace Slime {
 
-void execute_command(const std::string &command,
+void print_working_directory() {
+  fs::path currentPath = fs::current_path();
+  std::cout << currentPath.string() << "\n";
+}
+
+void execute_command(const std::string& command,
                      std::vector<std::string> inputs) {
   // executes the command
   std::string full_argument = command;
@@ -23,49 +30,58 @@ void execute_command(const std::string &command,
   int system = std::system(full_argument.c_str());
 }
 
-std::vector<std::string> get_directories(const char *char_path) {
+std::vector<std::string> get_directories(const char* char_path) {
   std::string_view path(char_path);
   std::vector<std::string> result;
 
-  for (auto &&word : path | std::views::split(':')) {
+  for (auto&& word : path | std::views::split(':')) {
     result.emplace_back(word.begin(), word.end());
   }
   return result;
 }
 
-bool check_file_permission_status(const f_sys::path &path) {
-  auto status = f_sys::status(path);
+bool check_file_permission_status(const fs::path& path) {
+  auto status = fs::status(path);
   auto permissions = status.permissions();
-  // if ((permissions & f_sys::perms::owner_write) != f_sys::perms::none) return
-  // false; if ((permissions & f_sys::perms::owner_read) != f_sys::perms::none)
+  // if ((permissions & fs::perms::owner_write) != fs::perms::none) return
+  // false; if ((permissions & fs::perms::owner_read) != fs::perms::none)
   // return false;
-  if ((permissions & f_sys::perms::owner_exec) != f_sys::perms::none)
-    return true;
+  if ((permissions & fs::perms::owner_exec) != fs::perms::none) return true;
   return false;
 }
 
-std::string find_in_path(const std::string &command, const char *path) {
+std::string find_in_path(const std::string& command, const char* path) {
   if (!path) {
     return "";
   }
   std::vector<std::string> directories = std::move(get_directories(path));
 
-  for (const auto &dir : directories) {
-    f_sys::path full_path = f_sys::path(dir) / command;
-    if (f_sys::exists(full_path)) {
-      if (check_file_permission_status(full_path) == false)
-        continue;
+  for (const auto& dir : directories) {
+    fs::path full_path = fs::path(dir) / command;
+    if (fs::exists(full_path)) {
+      if (check_file_permission_status(full_path) == false) continue;
       return full_path.string();
     }
   }
   return "";
 }
 
-bool is_executable(const std::string &command, const char *path) {
-  std::string &&full_path = std::move(find_in_path(command, path));
+bool is_executable(const std::string& command, const char* path) {
+  std::string&& full_path = std::move(find_in_path(command, path));
   return full_path.size() > 0;
 }
 
-} // namespace Slime
+bool is_input_shell_type(const std::string& input) noexcept {
+  static shell_hash_set set{};
+  return set.contains(input);
+}
 
-#endif // FILESYS_H_
+const std::string find_in_file_system(std::string& command) noexcept {
+  char* path = std::getenv("PATH");
+  // base case
+  return find_in_path(command, path);
+}
+
+}  // namespace Slime
+
+#endif  // FILESYS_H_

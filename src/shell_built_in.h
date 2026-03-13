@@ -6,26 +6,27 @@
 
 namespace Slime {
 class shell_hash_set {
-public:
+ public:
   shell_hash_set() {
     set.insert("echo");
     set.insert("type");
     set.insert("exit");
+    set.insert("pwd");
   }
 
   ~shell_hash_set() = default;
-  shell_hash_set(const shell_hash_set &other) = default;
-  shell_hash_set(shell_hash_set &&other) = default;
-  shell_hash_set &operator=(const shell_hash_set &other) = default;
-  shell_hash_set &operator=(shell_hash_set &&other) = default;
+  shell_hash_set(const shell_hash_set& other) = default;
+  shell_hash_set(shell_hash_set&& other) = default;
+  shell_hash_set& operator=(const shell_hash_set& other) = default;
+  shell_hash_set& operator=(shell_hash_set&& other) = default;
 
-  bool contains(const std::string &other) noexcept {
+  bool contains(const std::string& other) noexcept {
     return set.find(other) != set.end();
   }
 
-private:
+ private:
   std::unordered_set<std::string> set;
 };
-} // namespace Slime
+}  // namespace Slime
 
-#endif // SHELL_BUILT_IN_H_
+#endif  // SHELL_BUILT_IN_H_
