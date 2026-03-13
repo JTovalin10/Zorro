@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 
-#include "filesys.h"
+#include "filesys.hpp"
 
 void print_type(const std::string& input) noexcept {
   std::string type = input.substr(5);
@@ -32,18 +32,10 @@ void complete_operation(const std::string& user_input) noexcept {
   std::vector<std::string> inputs = user_input | std::views::split(' ') |
                                     std::ranges::to<std::vector<std::string>>();
   std::string command = inputs[0];
-  if (command == "echo") {
-    // length of command + blank space
-    std::cout << user_input.substr(command.length() + 1) << "\n";
-  } else if (command == "type") {
-    print_type(user_input);
-    std::cout << "\n";
-  } else if (command == "pwd") {
-    Slime::print_working_directory();
-  } else if (command == "cd") {
-    Slime::change_directory(inputs[1]);
+  if (Slime::is_input_shell_type(command)) {
+    Slime::execute_shell_command(inputs);
   } else if (Slime::is_executable(command, std::getenv("PATH"))) {
-    Slime::execute_command(command, inputs);
+    Slime::execute_non_shell_command(command, inputs);
   } else {
     std::cout << user_input << ": command not found\n";
   }

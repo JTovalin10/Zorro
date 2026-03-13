@@ -1,5 +1,4 @@
-#ifndef FILESYS_H_
-#define FILESYS_H_
+#pragma once
 
 #include <cstdlib>
 #include <filesystem>
@@ -9,32 +8,18 @@
 #include <string_view>
 #include <vector>
 
-#include "shell_built_in.h"
+#include "BuiltInCommand.hpp"
 
 namespace fs = std::filesystem;
 
 namespace Slime {
 
-void change_directory(const std::string& desired_path) {
-  if (fs::exists(desired_path) && fs::is_directory(desired_path)) {
-    try {
-      fs::current_path(desired_path);
-    } catch (const fs::filesystem_error& e) {
-      // asumes the path is correct
-      std::cerr << "cd: " << desired_path << ": No such file or directory\n";
-    }
-  } else {
-    std::cerr << "cd: " << desired_path << ": No such file or directory\n";
-  }
+void execute_shell_command(std::vector<std::string> inputs) {
+  CommandRegistry::Run(inputs[0], inputs);
 }
 
-void print_working_directory() {
-  fs::path currentPath = fs::current_path();
-  std::cout << currentPath.string() << "\n";
-}
-
-void execute_command(const std::string& command,
-                     std::vector<std::string> inputs) {
+void execute_non_shell_command(const std::string& command,
+                               std::vector<std::string> inputs) {
   // executes the command
   std::string full_argument = command;
   for (int i = 1; i < inputs.size(); ++i) {
@@ -85,16 +70,13 @@ bool is_executable(const std::string& command, const char* path) {
 }
 
 bool is_input_shell_type(const std::string& input) noexcept {
-  static shell_hash_set set{};
-  return set.contains(input);
+  CommandRegistry::IsBuiltIn(input);
 }
 
-const std::string find_in_file_system(std::string& command) noexcept {
+const std::string& find_in_file_system(std::string& command) noexcept {
   char* path = std::getenv("PATH");
   // base case
   return find_in_path(command, path);
 }
 
 }  // namespace Slime
-
-#endif  // FILESYS_H_
