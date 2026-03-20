@@ -65,7 +65,7 @@ void execb(std::vector<std::string>& inputs) {
   const bool err_not_empty = !redirect.stderr_file.empty();
   const bool out_not_empty = !redirect.stdout_file.empty();
   const bool aout_not_empty = !redirect.stdout_append_file.empty();
-  const bool aerr_not_empty = !redirect.stdout_append_file.empty();
+  const bool aerr_not_empty = !redirect.stderr_append_file.empty();
   if (err_not_empty || out_not_empty || aout_not_empty) {
     fork_and_run([&] {
       if (err_not_empty) redirect_stderr(redirect.stderr_file);
@@ -85,7 +85,7 @@ void execnb(std::vector<std::string>& inputs) {
     const bool err_not_empty = !redirect.stderr_file.empty();
     const bool out_not_empty = !redirect.stdout_file.empty();
     const bool aout_not_empty = !redirect.stdout_append_file.empty();
-    const bool aerr_not_empty = !redirect.stdout_append_file.empty();
+    const bool aerr_not_empty = !redirect.stderr_append_file.empty();
     if (err_not_empty) redirect_stderr(redirect.stderr_file);
     if (out_not_empty) redirect_stdout(redirect.stdout_file);
     if (aout_not_empty) append_stdout(redirect.stdout_append_file);
