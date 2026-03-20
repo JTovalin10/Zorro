@@ -7,6 +7,7 @@
 
 enum class STATE { NORMAL, SINGLE_QUOTE, DOUBLE_QUOTE, BACKSLASH };
 
+namespace SLIME_UTILS {
 static constexpr char SQUOTE = '\'';
 static constexpr char DQUOTE = '"';
 static constexpr char BSLASH = '\\';
@@ -16,6 +17,7 @@ static constexpr int STDOUT_IDX{0};
 static constexpr int STDOUT_APPEND_IDX{1};
 static constexpr int STDERR_IDX{2};
 static constexpr int STDERR_APPEND_IDX{3};
+}  // namespace SLIME_UTILS
 
 namespace Slime {
 std::vector<std::string> parse_args(const std::string& user_args) {
@@ -29,13 +31,13 @@ std::vector<std::string> parse_args(const std::string& user_args) {
     char curr = user_args[i];
     switch (state) {
       case STATE::NORMAL:
-        if (curr == SQUOTE) {
+        if (curr == SLIME_UTILS::SQUOTE) {
           state = STATE::SINGLE_QUOTE;
-        } else if (curr == DQUOTE) {
+        } else if (curr == SLIME_UTILS::DQUOTE) {
           state = STATE::DOUBLE_QUOTE;
-        } else if (curr == BSLASH) {
+        } else if (curr == SLIME_UTILS::BSLASH) {
           state = STATE::BACKSLASH;
-        } else if (curr == SPACE) {
+        } else if (curr == SLIME_UTILS::SPACE) {
           if (!scurr.empty()) {
             parsed_args.push_back(scurr);
             scurr.clear();
@@ -45,18 +47,18 @@ std::vector<std::string> parse_args(const std::string& user_args) {
         }
         break;
       case STATE::SINGLE_QUOTE:
-        if (curr == SQUOTE) {
+        if (curr == SLIME_UTILS::SQUOTE) {
           state = STATE::NORMAL;
         } else {
           scurr += curr;
         }
         break;
       case STATE::DOUBLE_QUOTE:
-        if (curr == DQUOTE) {
+        if (curr == SLIME_UTILS::DQUOTE) {
           state = STATE::NORMAL;
-        } else if (curr == BSLASH && i + 1 < size) {
+        } else if (curr == SLIME_UTILS::BSLASH && i + 1 < size) {
           char next = user_args[i + 1];
-          if (next == DQUOTE || next == BSLASH) {
+          if (next == SLIME_UTILS::DQUOTE || next == SLIME_UTILS::BSLASH) {
             scurr += next;
             ++i;
           } else {
@@ -92,16 +94,16 @@ RedirectInfo find_redirect(std::vector<std::string>& args) {
     const bool inbound = i + 1 < args.size();
     if ((args[i] == ">" || args[i] == "1>") && inbound) {
       info.stdout_file = args[i + 1];
-      to_remove[STDOUT_IDX] = i;
+      to_remove[SLIME_UTILS::STDOUT_IDX] = i;
     } else if ((args[i] == ">>" || args[i] == "1>>") && inbound) {
       info.stdout_append_file = args[i + 1];
-      to_remove[STDOUT_APPEND_IDX] = i;
+      to_remove[SLIME_UTILS::STDOUT_APPEND_IDX] = i;
     } else if (args[i] == "2>" && inbound) {
       info.stderr_file = args[i + 1];
-      to_remove[STDERR_IDX] = i;
+      to_remove[SLIME_UTILS::STDERR_IDX] = i;
     } else if (args[i] == "2>>" && inbound) {
       info.stderr_append_file = args[i + 1];
-      to_remove[STDERR_APPEND_IDX] = i;
+      to_remove[SLIME_UTILS::STDERR_APPEND_IDX] = i;
     }
   }
   // we want to reverse from the back to front to avoid shifting issues
