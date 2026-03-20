@@ -4,7 +4,8 @@
 /**
  * finds the first word and returns it
  */
-static std::string autocomplete_helper(TrieNode* node, std::string& current);
+static void autocomplete_helper(TrieNode* node, std::string& current,
+                                std::vector<std::string>& result);
 
 void Trie::insert(const char* word) {
   TrieNode* tmp = &root;
