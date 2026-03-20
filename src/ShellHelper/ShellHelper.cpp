@@ -11,7 +11,7 @@ namespace SLIME_UTILS {
 static constexpr char SQUOTE = '\'';
 static constexpr char DQUOTE = '"';
 static constexpr char BSLASH = '\\';
-static constexpr char SPACE = ' ';
+static constexpr char SPCHAR = ' ';
 
 static constexpr int STDOUT_IDX{0};
 static constexpr int STDOUT_APPEND_IDX{1};
@@ -37,7 +37,7 @@ std::vector<std::string> parse_args(const std::string& user_args) {
           state = STATE::DOUBLE_QUOTE;
         } else if (curr == SLIME_UTILS::BSLASH) {
           state = STATE::BACKSLASH;
-        } else if (curr == SLIME_UTILS::SPACE) {
+        } else if (curr == SLIME_UTILS::SPCHAR) {
           if (!scurr.empty()) {
             parsed_args.push_back(scurr);
             scurr.clear();
