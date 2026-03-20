@@ -29,19 +29,22 @@ int main() {
   // Flush after every std::cout / std:cerr
   std::cout << std::unitbuf;
   std::cerr << std::unitbuf;
-  std::string user_input;
+
+  rl_attempted_completion_function = Slime::autocomplete;
+
+  std::string user_input{};
   while (true) {
-    std::cout << "$ ";
-    // use get line to get the entire line
-    if (!std::getline(std::cin, user_input)) {
-      break;
+    char* input = readline("$ ");
+    if (input) {
+      user_input = input;
+      free(input);
     }
-    if (user_input.empty()) {
-      continue;
-    }
-    if (user_input == "exit") {
-      break;
-    }
+
+    if (!input) break;
+
+    if (user_input.empty()) continue;
+    if (user_input == "exit") break;
+
     complete_operation(user_input);
   }
   return 0;

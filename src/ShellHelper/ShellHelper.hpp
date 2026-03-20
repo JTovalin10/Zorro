@@ -1,5 +1,7 @@
 #pragma once
 
+#include <readline/readline.h>
+
 #include <string>
 #include <vector>
 
@@ -47,4 +49,18 @@ RedirectInfo find_redirect(std::vector<std::string>& args);
  * false otherwise
  */
 bool is_built_in(const std::string& command) noexcept;
+
+/**
+ * Autocomplete function which is a global function pointer for
+ * rl_attempted_completion_function. DO NOT MODIFY SIGNATURE (except name)
+ *
+ * ARGS:
+ * text - the word currenetly being completed (the entire word under the cursor)
+ * start - where word starts
+ * end - where the cursor is
+ *
+ * RETURNS:
+ * autocompleted word
+ */
+char** autocomplete(const char* text, int start, int end);
 };  // namespace Slime
