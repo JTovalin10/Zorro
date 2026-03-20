@@ -99,6 +99,9 @@ RedirectInfo find_redirect(std::vector<std::string>& args) {
     } else if (args[i] == "2>" && inbound) {
       info.stderr_file = args[i + 1];
       to_remove[STDERR_IDX] = i;
+    } else if (args[i] == "2>>" && inbound) {
+      info.stderr_append_file = args[i + 1];
+      to_remove[STDERR_APPEND_IDX] = i;
     }
   }
   // we want to reverse from the back to front to avoid shifting issues

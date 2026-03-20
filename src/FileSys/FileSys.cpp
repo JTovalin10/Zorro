@@ -33,6 +33,12 @@ static void redirect_stderr(const std::string& file) {
   close(fd);
 }
 
+static void append_stderr(const std::string& file) {
+  int fd = open(file.c_str(), O_WRONLY | O_APPEND | O_CREAT, 0644);
+  dup2(fd, STDERR_FILENO);
+  close(fd);
+}
+
 static void fork_and_run(std::function<void()> child_fn) {
   pid_t pid = fork();
   if (pid == 0) {
@@ -59,11 +65,13 @@ void execb(std::vector<std::string>& inputs) {
   const bool err_not_empty = !redirect.stderr_file.empty();
   const bool out_not_empty = !redirect.stdout_file.empty();
   const bool aout_not_empty = !redirect.stdout_append_file.empty();
+  const bool aerr_not_empty = !redirect.stdout_append_file.empty();
   if (err_not_empty || out_not_empty || aout_not_empty) {
     fork_and_run([&] {
       if (err_not_empty) redirect_stderr(redirect.stderr_file);
       if (out_not_empty) redirect_stdout(redirect.stdout_file);
       if (aout_not_empty) append_stdout(redirect.stdout_append_file);
+      if (aerr_not_empty) append_stderr(redirect.stderr_append_file);
       CommandRegistry::Run(inputs[0], inputs);
     });
   } else {
@@ -77,10 +85,11 @@ void execnb(std::vector<std::string>& inputs) {
     const bool err_not_empty = !redirect.stderr_file.empty();
     const bool out_not_empty = !redirect.stdout_file.empty();
     const bool aout_not_empty = !redirect.stdout_append_file.empty();
+    const bool aerr_not_empty = !redirect.stdout_append_file.empty();
     if (err_not_empty) redirect_stderr(redirect.stderr_file);
     if (out_not_empty) redirect_stdout(redirect.stdout_file);
     if (aout_not_empty) append_stdout(redirect.stdout_append_file);
-
+    if (aerr_not_empty) append_stderr(redirect.stderr_append_file);
     run_external(inputs);
   });
 }
