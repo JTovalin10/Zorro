@@ -1,13 +1,12 @@
 #pragma once
 
-#include <readline/readline.h>
-
 #include <cstdio>
+
+#include <readline/readline.h>
 #include <string>
 #include <vector>
 
 #include "Commands/AutoComplete.hpp"
-#include "FileSys/FileSys.hpp"
 
 namespace Slime {
 
@@ -71,6 +70,10 @@ bool is_built_in(const std::string& command) noexcept;
  */
 char** autocomplete(const char* text, int start, int end);
 };  // namespace Slime
+
+namespace Slime {
+std::vector<std::string> find_all_execnb();
+}  // forward declaration
 
 static bool executed = []() {
   std::vector<std::string> cmds = Slime::find_all_execnb();

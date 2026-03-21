@@ -1,8 +1,8 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
-#include "BuiltInCommand.hpp"
 #include "Trie/Trie.hpp"
 
 class AutoComplete {

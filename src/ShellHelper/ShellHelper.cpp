@@ -1,5 +1,7 @@
 #include "ShellHelper.hpp"
 
+#include "Commands/BuiltInCommand.hpp"
+
 #include <fcntl.h>
 #include <unistd.h>
 
