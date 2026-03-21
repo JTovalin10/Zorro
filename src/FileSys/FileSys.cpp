@@ -6,10 +6,6 @@
 #include <functional>
 #include <ranges>
 
-#include "AutoComplete.hpp"
-#include "Commands/BuiltInCommand.hpp"
-#include "ShellHelper/ShellHelper.hpp"
-
 namespace Slime {
 
 static void fork_and_run(std::function<void()> child_fn) {

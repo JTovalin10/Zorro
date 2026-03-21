@@ -7,6 +7,10 @@
 #include <string>
 #include <vector>
 
+#include "Commands/AutoComplete.hpp"
+#include "Commands/BuiltInCommand.hpp"
+#include "ShellHelper/ShellHelper.hpp"
+
 namespace fs = std::filesystem;
 
 namespace Slime {
