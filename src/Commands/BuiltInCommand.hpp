@@ -6,8 +6,8 @@
 #include <unordered_map>
 #include <vector>
 
-#include "../Trie/Trie.hpp"
 #include "AutoComplete.hpp"
+#include "Trie/Trie.hpp"
 
 class BuiltInCommand {
  public:
