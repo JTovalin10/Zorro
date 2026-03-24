@@ -113,10 +113,14 @@ std::vector<std::string> find_all_execnb() {
 }
 
 void insert_files_in_trie() {
-  for (const auto& file : fs::recursive_directory_iterator(".")) {
-    FileAutoComplete::Add(file.path().filename().string());
-    FileAutoComplete::Add(
-        file.path().string().substr(2));  // we have to strip the ./
+  for (const auto& entry : fs::recursive_directory_iterator(".")) {
+    if (fs::is_regular_file(entry)) {
+      FileAutoComplete::Add(entry.path().filename().string());
+      FileAutoComplete::Add(
+          entry.path().string().substr(2));  // we have to strip the ./
+    } else if (fs::is_directory(entry)) {
+      FileAutoComplete::Add(entry.path().string().substr(2) + "/");
+    }
   }
 }
 
