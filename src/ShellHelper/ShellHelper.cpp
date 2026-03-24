@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <iostream>
 
 #include "Commands/BuiltInCommand.hpp"
 
@@ -167,37 +168,70 @@ bool is_built_in(const std::string& command) noexcept {
   return CommandRegistry::IsBuiltIn(command);
 }
 
+static bool is_prefix(std::vector<std::string> matches, int index) {
+  std::string check = matches[0].substr(0, index);
+  for (int i{1}; i < matches.size(); ++i) {
+    if (matches[i].find(check) != 0) return false;
+  }
+  return true;
+}
+
+static std::string longest_common_prefix(std::vector<std::string> matches) {
+  if (matches.size() == 0) return "";
+  int l{1};
+  int r = std::numeric_limits<int>::max();
+  // find the shortest length string
+  for (const auto& s : matches) {
+    r = std::min(static_cast<size_t>(r), s.size());
+  }
+  while (l < r) {
+    int mid = l + (r - l + 1) / 2;
+    if (is_prefix(matches, mid)) {
+      l = mid;
+    } else {
+      r = mid - 1;
+    }
+  }
+  return matches[0].substr(0, r);
+}
+
 char** autocomplete(const char* text, int start, int end) {
   rl_attempted_completion_over = 1;
-
-  // on first attempt make it ding
-  // all other attempts will become '\?'
-
   std::vector<std::string> match = AutoComplete::Run(text);
   if (match.empty()) return nullptr;
 
-  if (match.size() == 1) {
-    char** arr = new char*[2];
-    // converts the string to a heap allocated C string.
-    // strdup does malloc + strcpy
-    arr[0] = strdup(match[0].c_str());
-    arr[1] = nullptr;
-    return arr;
-  } else {
-    if (rl_completion_type == '\t') {
-      rl_ding();
+  std::string result = match[0];
+  if (match.size() > 1) {
+    result = longest_common_prefix(match);
+    rl_completion_append_character = '\0';
+    if (result == std::string(text)) {
+      static std::string last_ding_text;
+      if (last_ding_text == std::string(text)) {
+        // second TAB: display all completions
+        std::cout << "\n";
+        for (size_t i = 0; i < match.size(); ++i) {
+          if (i > 0) std::cout << "  ";
+          std::cout << match[i];
+        }
+        std::cout << "\n";
+        rl_on_new_line();
+        rl_redisplay();
+        last_ding_text.clear();
+      } else {
+        // first TAB: ring bell and remember
+        last_ding_text = std::string(text);
+        rl_ding();
+      }
       return nullptr;
     }
-    std::string result{};
-    for (int i{}; i < match.size(); ++i) {
-      if (i != 0) result += " ";
-      result += match[i];
-    }
-    fprintf(rl_outstream, "\n%s\n", result.c_str());
-    rl_on_new_line();
-    rl_redisplay();
-    return nullptr;
+  } else {
+    rl_completion_append_character = ' ';
   }
+
+  char** arr = new char*[2];
+  arr[0] = strdup(result.c_str());
+  arr[1] = nullptr;
+  return arr;
 }
 
 }  // namespace Slime
