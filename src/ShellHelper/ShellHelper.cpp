@@ -200,7 +200,10 @@ char** autocomplete(const char* text, int start, int end) {
   std::vector<std::string> match =
       (start == 0) ? AutoComplete::Run(text) : FileAutoComplete::Run(text);
 
-  if (match.empty()) return nullptr;
+  if (match.empty()) {
+    rl_ding();
+    return nullptr;
+  }
 
   std::string result = match[0];
   if (match.size() > 1) {
