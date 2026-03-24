@@ -31,6 +31,7 @@ int main() {
   std::cerr << std::unitbuf;
 
   rl_attempted_completion_function = Slime::autocomplete;
+  rl_completer_word_break_characters = (char*)" \t\n\"'@><=;|&{(";
   Slime::insert_files_in_trie();
   std::string user_input{};
   while (true) {
