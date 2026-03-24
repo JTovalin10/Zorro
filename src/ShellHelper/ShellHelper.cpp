@@ -237,9 +237,15 @@ char** autocomplete(const char* text, int start, int end) {
       }
       return nullptr;
     }
+  }
+
+  // set append character based on final result
+  if (!result.empty() && result.back() == '/') {
+    rl_completion_append_character = '\0';  // directory: no space
+  } else if (match.size() == 1) {
+    rl_completion_append_character = ' ';   // unambiguous match: add space
   } else {
-    rl_completion_append_character =
-        (start > 0 && !result.empty() && result.back() == '/') ? '\0' : ' ';
+    rl_completion_append_character = '\0';  // partial prefix: no space
   }
 
   char** arr = new char*[2];
