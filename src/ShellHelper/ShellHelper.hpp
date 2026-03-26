@@ -1,8 +1,8 @@
 #pragma once
 
-#include <cstdio>
-
 #include <readline/readline.h>
+
+#include <cstdio>
 #include <string>
 #include <vector>
 
@@ -69,11 +69,13 @@ bool is_built_in(const std::string& command) noexcept;
  * autocompleted word
  */
 char** autocomplete(const char* text, int start, int end);
+
+std::vector<std::string> find_pipe(const std::vector<std::string>& args);
 };  // namespace Slime
 
 namespace Slime {
 std::vector<std::string> find_all_execnb();
-}  // forward declaration
+}  // namespace Slime
 
 static bool executed = []() {
   std::vector<std::string> cmds = Slime::find_all_execnb();

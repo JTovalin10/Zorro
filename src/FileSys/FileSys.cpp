@@ -34,23 +34,119 @@ static void run_external(const std::vector<std::string>& inputs) {
 }
 
 void execb(std::vector<std::string>& inputs) {
-  Slime::RedirectInfo redirect = Slime::find_redirect(inputs);
-  if (redirect.has_any()) {
-    fork_and_run([&] {
-      redirect.apply();
+  std::vector<std::string> segments = Slime::find_pipe(inputs);
+  if (segments.size() == 1) {
+    Slime::RedirectInfo redirect = Slime::find_redirect(inputs);
+    if (redirect.has_any()) {
+      fork_and_run([&] {
+        redirect.apply();
+        CommandRegistry::Run(inputs[0], inputs);
+      });
+    } else {
       CommandRegistry::Run(inputs[0], inputs);
-    });
-  } else {
-    CommandRegistry::Run(inputs[0], inputs);
+    }
+    return;
+  }
+  int prev_fd{-1};
+  std::vector<pid_t> pids{};
+  for (int i{0}; i < segments.size(); ++i) {
+    // pipefd[0] = read, pipefd[1] = write
+    // the function call alerady calls read and write
+    int pipefd[2] = {-1, -1};
+    const bool is_not_last = (i != segments.size() - 1);
+    if (is_not_last && pipe(pipefd) < 0) {
+      perror("Pipe");
+      exit(EXIT_FAILURE);
+    }
+    std::vector<std::string> tokens = parse_args(segments[i]);
+    Slime::RedirectInfo redirects = find_redirect(tokens);
+    pid_t pid = fork();
+    if (pid < 0) {
+      perror("fork");
+      exit(EXIT_FAILURE);
+    }
+    if (pid == 0) {
+      if (is_not_last) {
+        dup2(pipefd[1], STDOUT_FILENO);
+        close(pipefd[1]);
+        close(pipefd[0]);
+      }
+
+      if (prev_fd != -1) {
+        dup2(prev_fd, STDIN_FILENO);
+        close(prev_fd);
+      }
+      if (redirects.has_any()) redirects.apply();
+      CommandRegistry::Run(tokens[0], tokens);
+      exit(EXIT_SUCCESS);
+    } else {
+      pids.push_back(pid);
+      if (prev_fd != -1) close(prev_fd);
+      if (is_not_last) {
+        close(pipefd[1]);
+        prev_fd = pipefd[0];
+      }
+    }
+  }
+  for (const auto& pid : pids) {
+    waitpid(pid, nullptr, 0);
   }
 }
 
 void execnb(std::vector<std::string>& inputs) {
-  Slime::RedirectInfo redirect = Slime::find_redirect(inputs);
-  fork_and_run([&] {
-    redirect.apply();
-    run_external(inputs);
-  });
+  std::vector<std::string> segments = Slime::find_pipe(inputs);
+  if (segments.size() == 1) {
+    Slime::RedirectInfo redirect = Slime::find_redirect(inputs);
+    fork_and_run([&] {
+      redirect.apply();
+      run_external(inputs);
+    });
+    return;
+  }
+
+  int prev_fd{-1};
+  std::vector<pid_t> pids;
+  for (int i{0}; i < segments.size(); ++i) {
+    const bool is_not_last = i < segments.size() - 1;
+    int pipefd[2] = {-1, -1};
+
+    std::vector<std::string> tokens = parse_args(segments[i]);
+    Slime::RedirectInfo redirects = find_redirect(tokens);
+    if (pipe(pipefd) < 0) {
+      perror("Pipe");
+      exit(EXIT_FAILURE);
+    }
+
+    pid_t pid = fork();
+    if (pid < 0) {
+      perror("Fork");
+      exit(EXIT_FAILURE);
+    }
+
+    if (pid == 0) {
+      if (is_not_last) {
+        dup2(pipefd[1], STDOUT_FILENO);
+        close(pipefd[1]);
+      }
+
+      if (prev_fd != -1) {
+        dup2(prev_fd, STDIN_FILENO);
+        close(prev_fd);
+      }
+      if (redirects.has_any()) redirects.apply();
+      run_external(tokens);
+    } else {
+      pids.push_back(pid);
+      if (prev_fd != -1) close(prev_fd);
+      if (is_not_last) {
+        prev_fd = pipefd[0];
+        close(pipefd[1]);
+      }
+    }
+  }
+  for (const auto& pid : pids) {
+    waitpid(pid, nullptr, 0);
+  }
 }
 
 std::vector<std::string> get_directories(const char* char_path) {

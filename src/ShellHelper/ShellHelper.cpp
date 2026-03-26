@@ -243,7 +243,7 @@ char** autocomplete(const char* text, int start, int end) {
   if (!result.empty() && result.back() == '/') {
     rl_completion_append_character = '\0';  // directory: no space
   } else if (match.size() == 1) {
-    rl_completion_append_character = ' ';   // unambiguous match: add space
+    rl_completion_append_character = ' ';  // unambiguous match: add space
   } else {
     rl_completion_append_character = '\0';  // partial prefix: no space
   }
@@ -252,6 +252,21 @@ char** autocomplete(const char* text, int start, int end) {
   arr[0] = strdup(result.c_str());
   arr[1] = nullptr;
   return arr;
+}
+
+std::vector<std::string> find_pipe(const std::vector<std::string>& args) {
+  std::string curr{};
+  std::vector<std::string> result{};
+  for (const auto& s : args) {
+    if (s == "|") {
+      result.push_back(curr);
+      curr.clear();
+    } else {
+      curr += (curr.empty() ? "" : " ") + s;
+    }
+  }
+  if (!curr.empty()) result.push_back(curr);
+  return result;
 }
 
 }  // namespace Slime
