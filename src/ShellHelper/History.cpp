@@ -45,7 +45,7 @@ void History::print(const int n) {
   if (n == 0) {
     num = 0;
   } else {
-    int num = (n == g_max_entries) ? g_max_entries : g_max_entries - n;
+    num = (history_length > n) ? history_length - n : 0;
   }
 
   for (int i = num; list && list[i]; ++i) {
