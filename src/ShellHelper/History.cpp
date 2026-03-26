@@ -32,7 +32,7 @@ void History::remove(int n) {
   free(entry);
 }
 
-void History::read() { read_history(g_hist_file.c_str()); }
+void History::read(const std::string& file) { read_history(file.c_str()); }
 
 void History::clear() { clear_history(); }
 

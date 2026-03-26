@@ -21,7 +21,7 @@ class History {
   History& operator=(History&& other) = delete;
 
   /** reads history file into in-memory buffer */
-  void read();
+  void read(const std::string& file);
 
   /**
    * Saves the current history to file

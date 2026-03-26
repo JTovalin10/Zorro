@@ -70,11 +70,12 @@ const std::unordered_map<std::string, HistoryCommand::Handler>
          }},
         {"-r",
          [](const std::vector<std::string>& args) {
-           if (args.size() != 2) {
-             std::cerr << "history: -r: too many arguments\n";
+           if (args.size() != 3) {
+             std::cerr << "history: -r: too few or many arguments\n";
              return;
            }
-           Slime::get_history().read();
+           const std::string file = args[2];
+           Slime::get_history().read(file);
          }},
         {"-w",
          [](const std::vector<std::string>& args) {
