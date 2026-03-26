@@ -41,15 +41,11 @@ void History::add(const std::string& line) { add_history(line.c_str()); }
 void History::print(const int n) {
   HIST_ENTRY** list = history_list();
   // prints last n entries
-  int num;
-  if (n == 0) {
-    num = 0;
-  } else {
-    num = (history_length > n) ? history_length - n : 0;
-  }
-
+  int num = (n == 0) ? g_entries_start_at
+                     : std::max(g_entries_start_at, history_length - n);
   for (int i = num; list && list[i]; ++i) {
-    std::cout << "    " << i + 1 << "  " << list[i]->line << '\n';
+    std::cout << "    " << (i - g_entries_start_at + 1) << "  " << list[i]->line
+              << '\n';
   }
   // n is up to n
 }
