@@ -30,6 +30,11 @@ void execb(std::vector<std::string>& inputs);
 void execnb(std::vector<std::string>& inputs);
 
 /**
+ * Executes both built in and non built in. used for piping
+ */
+void execa(std::vector<std::string>& inputs);
+
+/**
  * Returns a the directories tied with the given path
  *
  * ARGS:

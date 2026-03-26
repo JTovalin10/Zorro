@@ -16,10 +16,8 @@
 void complete_operation(const std::string& user_input) noexcept {
   std::vector<std::string> inputs = Slime::parse_args(user_input);
   std::string command = inputs[0];
-  if (Slime::is_built_in(command)) {
-    Slime::execb(inputs);
-  } else if (Slime::is_executable(command)) {
-    Slime::execnb(inputs);
+  if (Slime::is_built_in(command) || Slime::is_executable(command)) {
+    Slime::execa(inputs);
   } else {
     std::cout << user_input << ": command not found\n";
   }
