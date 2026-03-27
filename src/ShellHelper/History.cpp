@@ -12,13 +12,21 @@ History::History(const std::string& hist_file, const int max_entries)
   g_entries_start_at = history_length;
 }
 
-History::~History() { save(); }
+History::~History() { save(g_hist_file); }
 
 void History::save(const std::string& file) {
   // saves history to the file
   const char* cfile = file.c_str();
   write_history(cfile);
   history_truncate_file(cfile, g_max_entries);
+}
+
+void History::append(const std::string& file) {
+  int new_entries = history_length - last_appended;
+  if (new_entries <= 0) return;
+
+  append_history(new_entries, file.c_str());
+  last_appended = history_length;
 }
 
 void History::remove(int n) {

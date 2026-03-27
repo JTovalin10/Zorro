@@ -23,10 +23,12 @@ class History {
   /** reads history file into in-memory buffer */
   void read(const std::string& file);
 
+  void append(const std::string& file);
+
   /**
    * Saves the current history to file
    */
-  void save(const std::string& file = get_history_file());
+  void save(const std::string& file);
 
   /**
    * removes entry n, if it exists
@@ -53,6 +55,7 @@ class History {
   std::string g_hist_file{};
   int g_entries_start_at{0};
   int g_max_entries{500};
+  int last_appended{0};
 
   static const std::string get_history_file() {
     const char* path = std::getenv("HOME");

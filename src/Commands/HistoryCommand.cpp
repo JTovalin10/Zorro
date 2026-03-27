@@ -62,11 +62,12 @@ const std::unordered_map<std::string, HistoryCommand::Handler>
          }},
         {"-a",
          [](const std::vector<std::string>& args) {
-           if (args.size() != 2) {
-             std::cerr << "history: -a: too many arguments\n";
+           if (args.size() != 3) {
+             std::cerr << "history: -a <filename>\n";
              return;
            }
-           Slime::get_history().save();
+           const std::string file = args[2];
+           Slime::get_history().append(file);
          }},
         {"-r",
          [](const std::vector<std::string>& args) {
@@ -80,7 +81,7 @@ const std::unordered_map<std::string, HistoryCommand::Handler>
         {"-w",
          [](const std::vector<std::string>& args) {
            if (args.size() != 3) {
-             std::cerr << "history: -w: too many arguments\n";
+             std::cerr << "history: -w: too few or many arguments\n";
              return;
            }
            const std::string file = args[2];
