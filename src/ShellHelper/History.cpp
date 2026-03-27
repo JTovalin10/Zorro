@@ -9,7 +9,6 @@ History::History(const std::string& hist_file, const int max_entries)
   using_history();
   stifle_history(max_entries);
   read_history(g_hist_file.c_str());
-  g_entries_start_at = history_length;
 }
 
 History::~History() { save(g_hist_file); }

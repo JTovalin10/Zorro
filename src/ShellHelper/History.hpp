@@ -58,9 +58,12 @@ class History {
   int last_appended{0};
 
   static const std::string get_history_file() {
-    const char* path = std::getenv("HOME");
-    if (!path) path = "/tmp";
-    return std::string(path) + "/.app_history";
+    const char* path = std::getenv("HISTFILE");
+    if (path) {
+      return path;
+    } else {
+      return "~/.zorro_history";
+    }
   }
 };
 

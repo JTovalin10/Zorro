@@ -32,6 +32,8 @@ int main() {
   rl_attempted_completion_function = Slime::autocomplete;
   Slime::insert_files_in_trie();
   std::string user_input{};
+
+  Slime::History& hist = Slime::get_history();
   while (true) {
     char* input = readline("$ ");
 
@@ -47,7 +49,7 @@ int main() {
       free(input);
     }
 
-    Slime::get_history().add(user_input);
+    hist.add(user_input);
     if (user_input == "exit") break;
 
     complete_operation(user_input);
