@@ -1,34 +1,45 @@
-[![progress-banner](https://backend.codecrafters.io/progress/shell/6ccf22be-62ff-4d0b-ac8b-2ac342f8a220)](https://app.codecrafters.io/users/codecrafters-bot?r=2qF)
+# Zorro
 
-This is a starting point for C++ solutions to the
-["Build Your Own Shell" Challenge](https://app.codecrafters.io/courses/shell/overview).
+A POSIX-style interactive shell written from scratch in C++23. It supports pipelines, I/O redirection, quoting, command history and tab completion. It uses `fork`, `execvp`, `pipe` and `dup2` directly instead of wrapping `system()`.
 
-In this challenge, you'll build your own POSIX compliant shell that's capable of
-interpreting shell commands, running external programs and builtin commands like
-cd, pwd, echo and more. Along the way, you'll learn about shell command parsing,
-REPLs, builtin commands, and more.
+## Features
 
-**Note**: If you're viewing this repo on GitHub, head over to
-[codecrafters.io](https://codecrafters.io) to try the challenge.
+- Built-ins: `cd`, `pwd`, `echo`, `type`, `history`, `exit`
+- Runs any external program found on `$PATH`
+- Pipelines (`a | b | c`) that can mix built-ins and external programs
+- Redirection: `>`, `>>`, `1>`, `1>>`, `2>`, `2>>`
+- Single quotes, double quotes and backslash escapes
+- Persistent history through GNU Readline (`$HISTFILE`, `history -r/-w/-a/-c/-d`)
+- Tab completion for commands and files
 
-# Passing the first stage
+## How it works
 
-The entry point for your `shell` implementation is in `src/main.cpp`. Study and
-uncomment the relevant code, then run the command below to execute the tests on
-our servers:
+1. **Read:** `main` reads a line with Readline.
+2. **Parse:** a hand-written state-machine lexer splits the line into tokens, handling quotes and escapes.
+3. **Execute:** the line is split on `|`, redirects are extracted for each segment, and each segment is forked. Built-ins run through a `CommandRegistry`, and everything else goes to `execvp`.
+4. **Complete:** a Trie indexes every executable on `$PATH` and every file in the working directory. Tab completes to the longest common prefix, and a second Tab lists all matches.
 
-```sh
-codecrafters submit
+Each built-in subclasses `BuiltInCommand` and registers itself, so adding a command means adding one file under `src/Commands/`.
+
+## Project layout
+
+```
+src/
+  main.cpp                 REPL loop
+  ShellHelper/             Lexer, redirect/pipe parsing, history
+  FileSys/                 PATH lookup, fork/exec, pipelines
+  Commands/                Built-ins, command registry, Trie autocomplete
+tests/                     Unit tests, integration script, benchmarks
 ```
 
-Time to move on to the next stage!
+## Build and run
 
-# Stage 2 & beyond
+Requires CMake 3.13+, a C++23 compiler, and GNU Readline. `CMakeLists.txt` currently points at a Homebrew readline path, so Linux users may need to adjust it.
 
-Note: This section is for stages 2 and beyond.
-
-1. Ensure you have `cmake` installed locally
-1. Run `./your_program.sh` to run your program, which is implemented in
-   `src/main.cpp`.
-1. Run `codecrafters submit` to submit your solution to CodeCrafters. Test
-   output will be streamed to your terminal.
+```sh
+cmake -B build && cmake --build build
+./build/shell              # run the shell
+./build/shell_tests        # unit tests
+./build/shell_bench        # benchmarks
+./tests/integration.sh build/shell
+```
